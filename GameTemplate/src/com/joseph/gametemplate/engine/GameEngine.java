@@ -79,15 +79,16 @@ public class GameEngine {
 	 * Drawable only objects
 	 */
 	private static ArrayList<IDrawable> drawable = new ArrayList<IDrawable>();
-	/**
-	 * Some stuff that Joseph did that idk what it does
-	 */
 	private static ArrayList<IGuiOverlay> guiOverlays = new ArrayList<IGuiOverlay>();
 
 	/**
 	 * Handles user input
 	 */
-	public static boolean[] isKeyPressed = new boolean[256];
+	private static boolean[] isKeyPressed = new boolean[256];
+
+	public static boolean[] getKeyPressedArray() {
+		return isKeyPressed;
+	}
 
 	/**
 	 * 
