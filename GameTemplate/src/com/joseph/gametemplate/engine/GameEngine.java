@@ -81,9 +81,6 @@ public class GameEngine {
 	private static ArrayList<IDrawable> drawable = new ArrayList<IDrawable>();
 	private static ArrayList<IGuiOverlay> guiOverlays = new ArrayList<IGuiOverlay>();
 
-	/**
-	 * Handles user input
-	 */
 	private static boolean[] isKeyPressed = new boolean[256];
 
 	public static boolean[] getKeyPressedArray() {
