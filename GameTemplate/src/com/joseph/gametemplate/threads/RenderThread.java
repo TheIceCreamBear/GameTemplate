@@ -21,7 +21,7 @@ public class RenderThread extends Thread {
 					if (!rlo.wasNotified()) {
 						continue;
 					} else {
-						gEngine.render(gEngine.getG(), gEngine.getFrame());
+						gEngine.render();
 						rlo.setWasNotified(false);
 					}
 				} catch (InterruptedException e) {

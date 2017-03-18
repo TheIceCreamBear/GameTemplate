@@ -17,7 +17,7 @@ import com.joseph.gametemplate.gameobject.RenderLockObject;
 import com.joseph.gametemplate.gui.IGuiOverlay;
 import com.joseph.gametemplate.interfaces.IDrawable;
 import com.joseph.gametemplate.interfaces.IUpdateable;
-import com.joseph.gametemplate.refrence.Refrence;
+import com.joseph.gametemplate.reference.Reference;
 import com.joseph.gametemplate.screen.Screen;
 import com.joseph.gametemplate.threads.RenderThread;
 import com.joseph.gametemplate.threads.ShutdownThread;
@@ -27,46 +27,101 @@ import com.joseph.gametemplate.threads.ShutdownThread;
  * @author Joseph Terribile - Current Maintainer
  */
 public class GameEngine {
+
+	/**
+	 * boolean that expressed the state of the engine, whether it is
+	 * <code> running </code> or not
+	 */
 	private static boolean running = true;
 	private static Random rand;
+	/**
+	 * The instance of the GameEngine
+	 */
 	private static GameEngine instance;
+	/**
+	 * Displayed at the top of the screen. Expresses the fps, and time and other
+	 * such things
+	 */
 	private static String stats = "";
 
+	/**
+	 * Used to display the screen
+	 */
 	private JFrame frame;
+
+	/**
+	 * First graphics instance
+	 */
 	private Graphics g;
+	/**
+	 * BufferedImage graphics instance
+	 */
 	private Graphics g2;
+	/**
+	 * Image that is displayed on the screen
+	 */
 	private BufferedImage i;
 
+	// Threads
 	private RenderLockObject rlo;
 	private RenderThread rtInstance;
 	private ShutdownThread sdtInstance;
 
-	/* The three types of Game Objects */
+	/**
+	 * ArrayList of GameObjects - to be looped over to update and draw
+	 */
 	private static ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
+	/**
+	 * Only updatable objects, looped through to update
+	 */
 	private static ArrayList<IUpdateable> updateable = new ArrayList<IUpdateable>();
+	/**
+	 * Drawable only objects
+	 */
 	private static ArrayList<IDrawable> drawable = new ArrayList<IDrawable>();
 	private static ArrayList<IGuiOverlay> guiOverlays = new ArrayList<IGuiOverlay>();
 
+	/**
+	 * Handles user input
+	 */
 	private static boolean[] isKeyPressed = new boolean[256];
-	
-	public static boolean[] getKeyPressedArray() {
+
+	/**
+	 * Returns reference to <code> keyPressed </code>
+	 * 
+	 * @return
+	 */
+	public static boolean[] getKeyPressed() {
 		return isKeyPressed;
 	}
 
+	/**
+	 * 
+	 * @return the instance of the GameEngine
+	 */
 	public static GameEngine getInstance() {
 		return instance;
 	}
 
+	/**
+	 * I don't even know why this is a thing
+	 * 
+	 * @return instance of a random
+	 */
 	public static Random getRand() {
 		return rand;
 	}
 
+	/**
+	 * 
+	 * @return true if <code> running </code>, false otherwise
+	 */
 	public static boolean isRunning() {
 		return running;
 	}
 
 	public static void main(String[] args) {
-		if (Refrence.DEBUG_MODE) {
+		if (Reference.DEBUG_MODE) {
 			System.out.println(Runtime.getRuntime().maxMemory());
 			System.err.println("x: " + Screen.width + "y: " + Screen.height);
 		}
@@ -74,15 +129,25 @@ public class GameEngine {
 		instance.run();
 	}
 
+	/**
+	 * Starts the GameEngine
+	 */
 	public static void startGameEngine() {
 		instance = new GameEngine();
 		instance.run();
 	}
 
+	/**
+	 * Initializes and instantiates
+	 */
 	public GameEngine() {
 		initialize();
 	}
 
+	/**
+	 * 
+	 * @return The keylistener used for the frame
+	 */
 	public KeyListener getKeyListener() {
 		return new KeyListener() {
 
@@ -98,16 +163,22 @@ public class GameEngine {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
-				// TODO OOOOOOO
+				// NOOP
 			}
 
 		};
 	}
 
+	/**
+	 * Why is this a thing? @Joseph
+	 */
 	public void reinitialize() {
 
 	}
 
+	/**
+	 * Initializes all the stuff
+	 */
 	public void initialize() {
 		this.sdtInstance = new ShutdownThread();
 		Runtime.getRuntime().addShutdownHook(sdtInstance);
@@ -133,6 +204,13 @@ public class GameEngine {
 		instance = this;
 	}
 
+	/**
+	 * Loops through all the updatables and updates them
+	 * 
+	 * @param deltaTime
+	 *            - Time between each frame (used to evaluate things within
+	 *            update methods of each object)
+	 */
 	public void update(double deltaTime) {
 		for (GameObject gameObject : gameObjects) {
 			gameObject.update(deltaTime);
@@ -147,7 +225,15 @@ public class GameEngine {
 
 	}
 
-	public void render(Graphics g, ImageObserver observer) {
+	/**
+	 * Loops through all the Drawables and draws them
+	 * 
+	 * @param g
+	 *            Graphics instance to draw upon
+	 * @param observer
+	 *            observer to put graphics instance upon
+	 */
+	private void render(Graphics g, ImageObserver observer) {
 		g2.setColor(Color.BLACK);
 		g2.fillRect(0, 0, Screen.width, Screen.height);
 
@@ -163,15 +249,25 @@ public class GameEngine {
 			iGuiOverlay.draw(g, observer);
 		}
 
-		if (Refrence.DEBUG_MODE) {
+		if (Reference.DEBUG_MODE) {
 			g2.setColor(Color.GREEN);
-			g2.setFont(new Font("Arial", 1, 20));
+			g2.setFont(Reference.DEFAULT_FONT);
 			g2.drawString(stats, 25, 60);
 		}
 
 		g.drawImage(this.i, 0, 0, this.frame);
 	}
 
+	/**
+	 * The render method with global visibility
+	 */
+	public void render() {
+		render(g, frame);
+	}
+
+	/**
+	 * Runs the GameEngine
+	 */
 	private void run() {
 		long time = System.nanoTime();
 		final double tick = 60.0;
@@ -225,16 +321,16 @@ public class GameEngine {
 				// GT stands for GameTime.
 				stats = "Ticks: " + ticks + ", FPS: " + fps + ", GT: " + ((hours < 10) ? "0" + hours : hours) + ":"
 						+ ((minutes < 10) ? "0" + minutes : minutes) + ":" + ((seconds < 10) ? "0" + seconds : seconds);
-				if (Refrence.DEBUG_MODE) {
+				if (Reference.DEBUG_MODE) {
 					System.out.println(stats);
 				}
 				ticks = 0;
 				fps = 0;
-				if (Refrence.DEBUG_MODE) {
+				if (Reference.DEBUG_MODE) {
 					System.out.println(Runtime.getRuntime().freeMemory());
 				}
 				System.gc();
-				if (Refrence.DEBUG_MODE) {
+				if (Reference.DEBUG_MODE) {
 					System.out.println(Runtime.getRuntime().freeMemory());
 				}
 			}
