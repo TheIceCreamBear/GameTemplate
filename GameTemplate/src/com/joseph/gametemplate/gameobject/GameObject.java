@@ -8,6 +8,6 @@ public abstract class GameObject implements IDrawable, IUpdateable {
 	protected boolean[] isKeyPresed;
 	
 	public GameObject() {
-		this.isKeyPresed = GameEngine.getKeyPressedArray();
+		this.isKeyPresed = GameEngine.getKeyPressed();
 	}
 }
