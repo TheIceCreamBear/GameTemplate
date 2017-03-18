@@ -82,7 +82,7 @@ public class GameEngine {
 	private static ArrayList<IGuiOverlay> guiOverlays = new ArrayList<IGuiOverlay>();
 
 	private static boolean[] isKeyPressed = new boolean[256];
-
+	
 	public static boolean[] getKeyPressedArray() {
 		return isKeyPressed;
 	}
