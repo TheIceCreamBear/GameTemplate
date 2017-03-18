@@ -8,8 +8,9 @@ import java.awt.event.MouseListener;
 
 /**
  * @author David Santamaria
- * @author Joseph Terribile
+ * @author Joseph Terribile - Maintainer
  * @version 0.3.1
+ * @deprecated
  */
 public class InputHandler {
 	private boolean[] keys = new boolean[256];
@@ -21,7 +22,7 @@ public class InputHandler {
 
 	public InputHandler(Component c) {
 		this.c = c;
-		
+
 		this.kL = new KeyListener() {
 			public void keyTyped(KeyEvent e) {
 			}
@@ -84,7 +85,7 @@ public class InputHandler {
 
 		return null;
 	}
-	
+
 	public void deInit() {
 		this.c.removeKeyListener(kL);
 		this.c.removeMouseListener(mL);
