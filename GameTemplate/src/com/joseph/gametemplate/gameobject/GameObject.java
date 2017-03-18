@@ -6,7 +6,7 @@ import com.joseph.gametemplate.interfaces.IUpdateable;
 
 public abstract class GameObject implements IDrawable, IUpdateable {
 	protected boolean[] isKeyPresed;
-
+	
 	public GameObject() {
 		this.isKeyPresed = GameEngine.getKeyPressedArray();
 	}
