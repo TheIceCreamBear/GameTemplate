@@ -47,7 +47,11 @@ public class GameEngine {
 	private static ArrayList<IDrawable> drawable = new ArrayList<IDrawable>();
 	private static ArrayList<IGuiOverlay> guiOverlays = new ArrayList<IGuiOverlay>();
 
-	public static boolean[] isKeyPressed = new boolean[256];
+	private static boolean[] isKeyPressed = new boolean[256];
+	
+	public static boolean[] getKeyPressedArray() {
+		return isKeyPressed;
+	}
 
 	public static GameEngine getInstance() {
 		return instance;
