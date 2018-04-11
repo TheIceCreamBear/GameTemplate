@@ -3,9 +3,9 @@ package com.joseph.gametemplate.reference;
 import java.awt.Font;
 
 /**
- * Values that are needed often, contained here for convenience
+ * Commonly used Objects or primitives stored in one location for quick Refrence
  * 
- * @author David Santamaria
+ * @author Joseph
  *
  */
 public class Reference {
