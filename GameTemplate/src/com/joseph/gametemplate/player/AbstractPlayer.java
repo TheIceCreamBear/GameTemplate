@@ -3,9 +3,9 @@ package com.joseph.gametemplate.player;
 import com.joseph.gametemplate.gameobject.GameObject;
 
 /**
- * An abstract player class that is used as a foundation to create other player
- * classes
+ * An abstract player class. Used to contain common types and methods used by various player objects.
  * 
+ * @author Joseph
  * @author David Santamaria
  *
  */

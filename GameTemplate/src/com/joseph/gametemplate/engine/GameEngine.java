@@ -2,12 +2,9 @@ package com.joseph.gametemplate.engine;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.util.ArrayList;
-import java.util.Random;
 
 import javax.swing.JFrame;
 
@@ -22,6 +19,8 @@ import com.joseph.gametemplate.threads.RenderThread;
 import com.joseph.gametemplate.threads.ShutdownThread;
 
 /**
+ * Class responsible for doing all the heavy lifting in the game. Hold the engine 
+ * Algorithm and references to all objects used by the game.
  * @author David Santamaria - Original Author
  * @author Joseph Terribile - Current Maintainer
  */
@@ -32,7 +31,6 @@ public class GameEngine {
 	 * <code> running </code> or not
 	 */
 	private static boolean running = true;
-	private static Random rand;
 	/**
 	 * The instance of the GameEngine
 	 */
@@ -81,20 +79,6 @@ public class GameEngine {
 	private static ArrayList<IGuiOverlay> guiOverlays = new ArrayList<IGuiOverlay>();
 
 	/**
-	 * Handles user input
-	 */
-	private static boolean[] isKeyPressed = new boolean[256];
-
-	/**
-	 * Returns reference to <code> keyPressed </code>
-	 * 
-	 * @return
-	 */
-	public static boolean[] getKeyPressed() {
-		return isKeyPressed;
-	}
-
-	/**
 	 * 
 	 * @return the instance of the GameEngine
 	 */
@@ -103,17 +87,8 @@ public class GameEngine {
 	}
 
 	/**
-	 * I don't even know why this is a thing
 	 * 
-	 * @return instance of a random
-	 */
-	public static Random getRand() {
-		return rand;
-	}
-
-	/**
-	 * 
-	 * @return true if <code> running </code>, false otherwise
+	 * @return state of {@link GameEngine#running GameEngine.running}
 	 */
 	public static boolean isRunning() {
 		return running;
@@ -144,45 +119,11 @@ public class GameEngine {
 	}
 
 	/**
-	 * 
-	 * @return The keylistener used for the frame
-	 */
-	public KeyListener getKeyListener() {
-		return new KeyListener() {
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				isKeyPressed[e.getKeyCode()] = true;
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				isKeyPressed[e.getKeyCode()] = false;
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-				// NOOP
-			}
-
-		};
-	}
-
-	/**
-	 * Why is this a thing? @Joseph
-	 */
-	public void reinitialize() {
-
-	}
-
-	/**
 	 * Initializes all the stuff
 	 */
 	public void initialize() {
 		this.sdtInstance = new ShutdownThread();
 		Runtime.getRuntime().addShutdownHook(sdtInstance);
-
-		rand = new Random();
 
 		this.frame = new JFrame("Game Template");
 		this.frame.setBounds(0, 0, Screen.width, Screen.height);
@@ -218,6 +159,10 @@ public class GameEngine {
 		for (IUpdateable upject : updateable) {
 			upject.update(deltaTime);
 		}
+		
+		for (IGuiOverlay gui : guiOverlays) {
+			gui.updateUpdateableGraphicsElements(deltaTime);
+		}
 	}
 
 	public void updateNetwork(double deltaTime) {
@@ -245,7 +190,8 @@ public class GameEngine {
 		}
 
 		for (IGuiOverlay iGuiOverlay : guiOverlays) {
-			iGuiOverlay.draw(g, observer);
+			iGuiOverlay.drawGuiBackground(g, observer);
+			iGuiOverlay.drawUpdateableGraphicsElements(g, observer);
 		}
 
 		if (Reference.DEBUG_MODE) {
@@ -258,7 +204,9 @@ public class GameEngine {
 	}
 
 	/**
-	 * The render method with global visibility
+	 * Short hand for {@link GameEngine#render(Graphics, ImageObserver)}, 
+	 * used by {@link com.joseph.gametemplate.threads.RenderThread RenderThread}
+	 * to render the game onto the frame.
 	 */
 	public void render() {
 		render(g, frame);

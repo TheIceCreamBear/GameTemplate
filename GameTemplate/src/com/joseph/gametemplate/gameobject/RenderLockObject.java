@@ -1,9 +1,9 @@
 package com.joseph.gametemplate.gameobject;
 
 /**
- * Some weird stuff idk how it works, because Joseph did it
+ * Object used to communicate across threads for rendering purposes.
  * 
- * @author David Santamaria
+ * @author Joseph
  *
  */
 public class RenderLockObject {

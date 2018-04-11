@@ -10,7 +10,8 @@ import java.awt.event.MouseListener;
  * @author David Santamaria
  * @author Joseph Terribile - Maintainer
  * @version 0.3.1
- * @deprecated
+ * @deprecated - Superseded by {@link com.joseph.gametemplate.handlers.GKELAH GKELAH}
+ * @see GKELAH
  */
 public class InputHandler {
 	private boolean[] keys = new boolean[256];
