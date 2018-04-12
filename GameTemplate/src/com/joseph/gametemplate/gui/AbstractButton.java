@@ -16,35 +16,35 @@ import javax.swing.JButton;
 public abstract class AbstractButton extends JButton implements IGuiOverlay {
 
 	@Override
-	protected void paintBorder(Graphics arg0) {
+	protected void paintBorder(Graphics g) {
 	}
 	
 	@Override
-	public void paint(Graphics arg0) {
+	public void paint(Graphics g) {
 	}
 	
 	@Override
-	protected void paintChildren(Graphics arg0) {
+	protected void paintChildren(Graphics g) {
 	}
 	
 	@Override
-	protected void paintComponent(Graphics arg0) {
+	protected void paintComponent(Graphics g) {
 	}
 	
 	@Override
-	public void paintImmediately(int arg0, int arg1, int arg2, int arg3) {
+	public void paintImmediately(int x, int y, int w, int h) {
 	}
 	
 	@Override
-	public void paintImmediately(Rectangle arg0) {
+	public void paintImmediately(Rectangle r) {
 	}
 	
 	@Override
-	public void paintComponents(Graphics arg0) {
+	public void paintComponents(Graphics g) {
 	}
 	
 	@Override
-	public void paintAll(Graphics arg0) {
+	public void paintAll(Graphics g) {
 	}
 	
 }
