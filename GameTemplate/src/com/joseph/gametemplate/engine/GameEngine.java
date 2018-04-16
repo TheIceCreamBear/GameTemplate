@@ -121,7 +121,7 @@ public class GameEngine {
 	/**
 	 * Initializes all the stuff
 	 */
-	public void initialize() {
+	private void initialize() {
 		this.sdtInstance = new ShutdownThread();
 		Runtime.getRuntime().addShutdownHook(sdtInstance);
 
@@ -151,7 +151,7 @@ public class GameEngine {
 	 *            - Time between each frame (used to evaluate things within
 	 *            update methods of each object)
 	 */
-	public void update(double deltaTime) {
+	private void update(double deltaTime) {
 		for (GameObject gameObject : gameObjects) {
 			gameObject.update(deltaTime);
 		}
@@ -278,22 +278,6 @@ public class GameEngine {
 				}
 			}
 		}
-	}
-
-	public JFrame getFrame() {
-		return this.frame;
-	}
-
-	public Graphics getG() {
-		return this.g;
-	}
-
-	public Graphics getG2() {
-		return this.g2;
-	}
-
-	public BufferedImage getI() {
-		return this.i;
 	}
 }
 /*
