@@ -165,10 +165,6 @@ public class GameEngine {
 		}
 	}
 
-	public void updateNetwork(double deltaTime) {
-
-	}
-
 	/**
 	 * Loops through all the Drawables and draws them
 	 * 
