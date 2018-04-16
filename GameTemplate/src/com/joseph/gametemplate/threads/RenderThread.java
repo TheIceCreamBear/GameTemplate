@@ -13,7 +13,7 @@ import com.joseph.gametemplate.gameobject.RenderLockObject;
  *
  */
 public class RenderThread extends Thread {
-	public RenderLockObject rlo;
+	private RenderLockObject rlo;
 	private GameEngine gEngine;
 	
 	/**

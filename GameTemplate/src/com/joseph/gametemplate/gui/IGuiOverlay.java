@@ -21,7 +21,7 @@ public interface IGuiOverlay /*extends IDrawable*/ {
 	 * @param g
 	 * @param observer
 	 */
-	public void drawGuiBackground(Graphics g, ImageObserver observer);
+	public void drawBackground(Graphics g, ImageObserver observer);
 	
 	/**
 	 * Draws those elements of the overlay that could possible change each tick. These elements will be 
@@ -29,13 +29,13 @@ public interface IGuiOverlay /*extends IDrawable*/ {
 	 * @param g
 	 * @param observer
 	 */
-	public void drawUpdateableGraphicsElements(Graphics g, ImageObserver observer);
+	public void drawUpdateableElements(Graphics g, ImageObserver observer);
 	
 	/** 
 	 * Updates any elements of this overlay that could possibly change every tick.
 	 * @param deltaTime
 	 */
-	public void updateUpdateableGraphicsElements(double deltaTime);
+	public void updateUpdateableElements(double deltaTime);
 	
 	/**
 	 * Whether or not this GUI should be removed at the end of the update tick.

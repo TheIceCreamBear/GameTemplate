@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import com.joseph.gametemplate.gameobject.GameObject;
 import com.joseph.gametemplate.gameobject.RenderLockObject;
 import com.joseph.gametemplate.gui.IGuiOverlay;
+import com.joseph.gametemplate.handlers.GKELAH;
 import com.joseph.gametemplate.interfaces.IDrawable;
 import com.joseph.gametemplate.interfaces.IUpdateable;
 import com.joseph.gametemplate.reference.Reference;
@@ -63,6 +64,11 @@ public class GameEngine {
 	private RenderLockObject rlo;
 	private RenderThread rtInstance;
 	private ShutdownThread sdtInstance;
+	
+	/**
+	 * Instance of {@link GKELAH GKELAH} stored to keep a reference to it.
+	 */
+	private GKELAH keyHandlerInstance;
 
 	/**
 	 * ArrayList of GameObjects - to be looped over to update and draw
@@ -134,6 +140,9 @@ public class GameEngine {
 		this.rlo = new RenderLockObject();
 		this.rtInstance = new RenderThread("RenderThread", this.rlo, this);
 		this.rtInstance.start();
+		
+		this.keyHandlerInstance = new GKELAH();
+		this.frame.addKeyListener(keyHandlerInstance);
 
 		this.i = new BufferedImage(Screen.width, Screen.height, BufferedImage.TYPE_INT_RGB);
 		this.g2 = this.i.createGraphics();
@@ -161,7 +170,7 @@ public class GameEngine {
 		}
 		
 		for (IGuiOverlay gui : guiOverlays) {
-			gui.updateUpdateableGraphicsElements(deltaTime);
+			gui.updateUpdateableElements(deltaTime);
 		}
 	}
 
@@ -186,8 +195,8 @@ public class GameEngine {
 		}
 
 		for (IGuiOverlay iGuiOverlay : guiOverlays) {
-			iGuiOverlay.drawGuiBackground(g, observer);
-			iGuiOverlay.drawUpdateableGraphicsElements(g, observer);
+			iGuiOverlay.drawBackground(g, observer);
+			iGuiOverlay.drawUpdateableElements(g, observer);
 		}
 
 		if (Reference.DEBUG_MODE) {
