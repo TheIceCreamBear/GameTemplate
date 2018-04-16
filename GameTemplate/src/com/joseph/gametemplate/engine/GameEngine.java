@@ -114,7 +114,7 @@ public class GameEngine {
 	/**
 	 * Initializes and instantiates
 	 */
-	public GameEngine() {
+	private GameEngine() {
 		initialize();
 	}
 
