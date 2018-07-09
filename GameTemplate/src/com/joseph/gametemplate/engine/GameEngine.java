@@ -2,6 +2,11 @@ package com.joseph.gametemplate.engine;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.util.ArrayList;
@@ -10,12 +15,13 @@ import javax.swing.JFrame;
 
 import com.joseph.gametemplate.gameobject.GameObject;
 import com.joseph.gametemplate.gameobject.RenderLockObject;
-import com.joseph.gametemplate.gui.IGuiOverlay;
+import com.joseph.gametemplate.gui.IGuiElement;
 import com.joseph.gametemplate.handlers.GKELAH;
+import com.joseph.gametemplate.handlers.MouseHandler;
 import com.joseph.gametemplate.interfaces.IDrawable;
 import com.joseph.gametemplate.interfaces.IUpdateable;
 import com.joseph.gametemplate.reference.Reference;
-import com.joseph.gametemplate.screen.Screen;
+import com.joseph.gametemplate.reference.ScreenReference;
 import com.joseph.gametemplate.threads.RenderThread;
 import com.joseph.gametemplate.threads.ShutdownThread;
 
@@ -32,10 +38,12 @@ public class GameEngine {
 	 * <code> running </code> or not
 	 */
 	private static boolean running = true;
+	
 	/**
 	 * The instance of the GameEngine
 	 */
 	private static GameEngine instance;
+	
 	/**
 	 * Displayed at the top of the screen. Expresses the fps, and time and other
 	 * such things
@@ -50,15 +58,23 @@ public class GameEngine {
 	/**
 	 * First graphics instance
 	 */
-	private Graphics g;
+	private Graphics2D g;
+	
 	/**
 	 * BufferedImage graphics instance
 	 */
-	private Graphics g2;
+	private Graphics2D g2;
+	
 	/**
 	 * Image that is displayed on the screen
 	 */
 	private BufferedImage i;
+	
+	/**
+	 * Refrence to the FontRenderContext for the game, saved 
+	 * in game engine for easy access.
+	 */
+	private FontRenderContext frc;
 
 	// Threads
 	private RenderLockObject rlo;
@@ -69,6 +85,11 @@ public class GameEngine {
 	 * Instance of {@link GKELAH GKELAH} stored to keep a reference to it.
 	 */
 	private GKELAH keyHandlerInstance;
+	
+	/**
+	 * Instance of the mouse handler object
+	 */
+	private MouseHandler mouseHandlerInstace;
 
 	/**
 	 * ArrayList of GameObjects - to be looped over to update and draw
@@ -82,7 +103,7 @@ public class GameEngine {
 	 * Drawable only objects
 	 */
 	private static ArrayList<IDrawable> drawable = new ArrayList<IDrawable>();
-	private static ArrayList<IGuiOverlay> guiOverlays = new ArrayList<IGuiOverlay>();
+	private static ArrayList<IGuiElement> guiOverlays = new ArrayList<IGuiElement>();
 
 	/**
 	 * 
@@ -103,7 +124,7 @@ public class GameEngine {
 	public static void main(String[] args) {
 		if (Reference.DEBUG_MODE) {
 			System.out.println(Runtime.getRuntime().maxMemory());
-			System.err.println("x: " + Screen.width + "y: " + Screen.height);
+			System.err.println("x: " + ScreenReference.WIDTH + "y: " + ScreenReference.HEIGHT);
 		}
 		instance = new GameEngine();
 		instance.run();
@@ -128,13 +149,24 @@ public class GameEngine {
 	 * Initializes all the stuff
 	 */
 	private void initialize() {
+		instance = this;
+		
+		if ((System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("windows")) && !System.getProperty("user.home").contains("AppData")) {
+			System.setProperty("user.home", System.getProperty("user.home") + "/AppData/Roaming");
+		}
+		
+		ScreenReference.doScreenCalc();
+		
+		Reference.Fonts.init();
+		
 		this.sdtInstance = new ShutdownThread();
 		Runtime.getRuntime().addShutdownHook(sdtInstance);
 
 		this.frame = new JFrame("Game Template");
-		this.frame.setBounds(0, 0, Screen.width, Screen.height);
+		this.frame.setBounds(0, 0, ScreenReference.WIDTH, ScreenReference.HEIGHT);
 		this.frame.setResizable(false);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.frame.setUndecorated(true);
 		this.frame.setVisible(true);
 
 		this.rlo = new RenderLockObject();
@@ -143,14 +175,23 @@ public class GameEngine {
 		
 		this.keyHandlerInstance = new GKELAH();
 		this.frame.addKeyListener(keyHandlerInstance);
+		
+		this.mouseHandlerInstace = new MouseHandler();
+		this.frame.addMouseListener(mouseHandlerInstace);
 
-		this.i = new BufferedImage(Screen.width, Screen.height, BufferedImage.TYPE_INT_RGB);
+		this.i = new BufferedImage(ScreenReference.WIDTH, ScreenReference.HEIGHT, BufferedImage.TYPE_INT_RGB);
 		this.g2 = this.i.createGraphics();
-		this.g = frame.getGraphics();
-
+		this.g = (Graphics2D) frame.getGraphics();
+		
+		// Turn on AnitAliasing
+		this.g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		this.g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		
+		this.frc = this.g2.getFontRenderContext();
+		
+		this.releaseFocous();
+		
 		System.gc();
-
-		instance = this;
 	}
 
 	/**
@@ -169,7 +210,7 @@ public class GameEngine {
 			upject.update(deltaTime);
 		}
 		
-		for (IGuiOverlay gui : guiOverlays) {
+		for (IGuiElement gui : guiOverlays) {
 			gui.updateUpdateableElements(deltaTime);
 		}
 	}
@@ -182,9 +223,9 @@ public class GameEngine {
 	 * @param observer
 	 *            observer to put graphics instance upon
 	 */
-	private void render(Graphics g, ImageObserver observer) {
+	private void render(Graphics2D g, ImageObserver observer) {
 		g2.setColor(Color.BLACK);
-		g2.fillRect(0, 0, Screen.width, Screen.height);
+		g2.fillRect(0, 0, ScreenReference.WIDTH, ScreenReference.HEIGHT);
 
 		for (GameObject gameObject : gameObjects) {
 			gameObject.draw(g2, observer);
@@ -194,15 +235,20 @@ public class GameEngine {
 			iDrawable.draw(g, observer);
 		}
 
-		for (IGuiOverlay iGuiOverlay : guiOverlays) {
-			iGuiOverlay.drawBackground(g, observer);
-			iGuiOverlay.drawUpdateableElements(g, observer);
-		}
-
 		if (Reference.DEBUG_MODE) {
 			g2.setColor(Color.GREEN);
-			g2.setFont(Reference.DEFAULT_FONT);
+			g2.setFont(ScreenReference.getTheFont());
 			g2.drawString(stats, 25, 60);
+			
+			Point p = getMouseLocation();
+			if (p != null) {
+				String s = p.toString();
+				Rectangle2D r;
+				r = ScreenReference.getTheFont().getStringBounds(s, frc);
+				int yOff = (int) r.getHeight();
+				// System.err.println(s + "," + p.x + "," + (p.y+ yOff));
+				g2.drawString(s, p.x, p.y + yOff);
+			}
 		}
 
 		g.drawImage(this.i, 0, 0, this.frame);
@@ -287,6 +333,26 @@ public class GameEngine {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * gets the location of the mouse in the frame
+	 * 
+	 * @return - the location of the mouse relative to the frame
+	 */
+	public Point getMouseLocation() {
+		return this.frame.getContentPane().getMousePosition();
+	}
+	
+	/**
+	 * Refocuses the frame to make sure that key events are captured
+	 */
+	public void releaseFocous() {
+		this.frame.requestFocus();
+	}
+	
+	public FontRenderContext getFrc() {
+		return this.frc;
 	}
 }
 /*

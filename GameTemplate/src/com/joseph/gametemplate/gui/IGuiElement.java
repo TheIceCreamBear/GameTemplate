@@ -1,16 +1,16 @@
 package com.joseph.gametemplate.gui;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.ImageObserver;
 
 /**
  * Interface defining behavior for visual elements of the game that are not
- * specifically a {@link com.joseph.gametemplate.gameobject.GameObject GameObject}
+ * specifically a {@link com.joseph.thedarknessbeyond.gameobject.GameObject GameObject}
  * but are updateable and are drawable. Most used context would be in the area of menus.
  * @author Joseph
  *
  */
-public interface IGuiOverlay /*extends IDrawable*/ {
+public interface IGuiElement {
 	/**
 	 * Draws the background of this overlay. The background should be the outer most elements of the 
 	 * overlay and the most basic. It should also be the farthest back elements of the background. Each 
@@ -21,7 +21,7 @@ public interface IGuiOverlay /*extends IDrawable*/ {
 	 * @param g
 	 * @param observer
 	 */
-	public void drawBackground(Graphics g, ImageObserver observer);
+	public void drawBackground(Graphics2D g, ImageObserver observer);
 	
 	/**
 	 * Draws those elements of the overlay that could possible change each tick. These elements will be 
@@ -29,7 +29,7 @@ public interface IGuiOverlay /*extends IDrawable*/ {
 	 * @param g
 	 * @param observer
 	 */
-	public void drawUpdateableElements(Graphics g, ImageObserver observer);
+	public void drawUpdateableElements(Graphics2D g, ImageObserver observer);
 	
 	/** 
 	 * Updates any elements of this overlay that could possibly change every tick.
@@ -38,16 +38,15 @@ public interface IGuiOverlay /*extends IDrawable*/ {
 	public void updateUpdateableElements(double deltaTime);
 	
 	/**
-	 * Whether or not this GUI should be removed at the end of the update tick.
-	 * @return This method should return a boolean value in the implementor of this interface on whether or not this 
-	 * GUI should be removed from the list of GUI's after the loop that updates them exits.
+	 * Method to check if the mouse pointer is in the executing object. 
+	 * @return True if the mouse pointer is in the GuiElement
 	 */
-	public boolean removeGui();
+	public boolean isMouseInElement();
 	
 	/**
-	 * After this method is called, {@link com.joseph.gametemplate.gui.IGuiOverlay#removeGui() IGuiOverlay.removeGui()} 
-	 * should return true. This method tells the implementor of this interface that the ESC key has been typed. If the 
-	 * implementor has custom ESC key behavior, this method serves as a notification of that.
+	 * This method is called when the mouse pointer is inside the executing object. It should define the look of the tool tip.
+	 * 
+	 * <p>Tool tips are to be brief and informative.
 	 */
-	public void setGuiToRemove();
+	public void displayToolTip(Graphics2D g);
 }

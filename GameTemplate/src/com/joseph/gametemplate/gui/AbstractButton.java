@@ -1,50 +1,28 @@
 package com.joseph.gametemplate.gui;
 
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.Point;
 
-import javax.swing.JButton;
+import com.joseph.gametemplate.interfaces.IMouseReliant;
+import com.joseph.gametemplate.reference.ScreenReference;
 
 /**
- * Extension of JButton that makes all paint functions <code>NO-OP</code>, and implements {@link IGuiOverlay IGuiOverlay}
- * to allow for painting of the button using the methods available in the engine.
+ * Extension of GuiElement that acts as a clickable button
  * @author Joseph
- * @see IGuiOverlay
+ * @see IGuiElement
  *
  */
-@SuppressWarnings("serial")
-public abstract class AbstractButton extends JButton implements IGuiOverlay {
+public abstract class AbstractButton extends GuiElement implements IMouseReliant {	
+	public AbstractButton(int x, int y, int width, int height, boolean scaled) {
+		super(x, y, width, height, scaled);
+		this.visible = true;
+	}
 
 	@Override
-	protected void paintBorder(Graphics g) {
+	public boolean isMouseInElement() {
+		Point p = ScreenReference.getMouseLocation();
+		if (p == null) {
+			return false;
+		}
+		return p.x >= x && p.x <= (x + width) && p.y >= y && p.y <= (y + height);
 	}
-	
-	@Override
-	public void paint(Graphics g) {
-	}
-	
-	@Override
-	protected void paintChildren(Graphics g) {
-	}
-	
-	@Override
-	protected void paintComponent(Graphics g) {
-	}
-	
-	@Override
-	public void paintImmediately(int x, int y, int w, int h) {
-	}
-	
-	@Override
-	public void paintImmediately(Rectangle r) {
-	}
-	
-	@Override
-	public void paintComponents(Graphics g) {
-	}
-	
-	@Override
-	public void paintAll(Graphics g) {
-	}
-	
 }

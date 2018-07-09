@@ -8,12 +8,12 @@ import com.joseph.gametemplate.gameobject.RenderLockObject;
  * Using multithreading techniques, this thread is designed to only run once the engine
  * notifies the {@link com.joseph.gametemplate.gameobject.RenderLockObject RenderLockObject}
  * allowing the update thread to update for the next frame while this thread renders the
- * current thread.
+ * current frame.
  * @author Joseph
  *
  */
 public class RenderThread extends Thread {
-	private RenderLockObject rlo;
+	public RenderLockObject rlo;
 	private GameEngine gEngine;
 	
 	/**
@@ -21,7 +21,7 @@ public class RenderThread extends Thread {
 	 * @param name - name of the thread
 	 * @param rlo - {@link com.joseph.gametemplate.gameobject.RenderLockObject RenderLockObject} 
 	 * 		used by {@link com.joseph.gametemplate.engine.GameEngine GameEngine} to communicate across threads.
-	 * @param ge - 
+	 * @param ge - {@link com.joseph.gametemplate.engine.GameEngine GameEngine} instance
 	 */
 	public RenderThread(String name, RenderLockObject rlo, GameEngine ge) {
 		super(name);
